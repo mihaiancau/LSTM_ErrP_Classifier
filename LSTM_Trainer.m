@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LSTM network for classification of error-related potentials %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-load fc6_vaS11.mat
+load EpochedData_Training\fc5_va_D1800.mat % here path to EpochedData_Training sample
 
 summary(Labels);
 % A = Epoch with error-related potential
