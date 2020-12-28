@@ -2,18 +2,18 @@
 %%%%%%%% Wrapper for classifying epochs using LSTM network %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-load 'RawData_Testing\s11_va_fc6.mat';
+load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data_ErrP\MatLab_EpochedData\Diverse formate date\semnale brute\vizualActiv acasa\vizActiv_D_fc5.mat';
 [moms,~] = size(moment);                              
 res = char(zeros(60,1));                            
 
 k = 1;      % index pentru moment(k,1)
 epoch = zeros(231,1);
-for t = 1 : length (fc6)
+for t = 1 : length (fc5)
     if t == moment(k,1)
         epoch_start = moment(k,1) - 26;
         epoch_end = moment(k,1) + 205;
         for i = epoch_start+1 : epoch_end
-            epoch(i-epoch_start,1) = fc6(i,1);
+            epoch(i-epoch_start,1) = fc5(i,1);
         end
         
         % aici facem testul
