@@ -6,10 +6,9 @@
 % Output: 231 x 1 x 1 array
 numFilters = 64;
 numLatentInputs = 100;
-% Network architecture equation 231 = (N1+1) + 15*f1 - 4 (provided stride = 1 for all layers)
 % This derives from the more general activations = input_size - (filter_size - 1),
 % provided no padding and striding applied
-projectionSize = [1 1 159]; % = N1 projection size is [1 1 N1]
+projectionSize = [160 1 1]; % = N1 projection size is [N1 1 1]
 filterSize = 5; % = f1 filter size is [1 f1]
 numClasses = 2;
 embeddingDimension = 100; % matches numLatentInputs
@@ -45,25 +44,24 @@ lgraphGenerator = connectLayers(lgraphGenerator,'emb','cat/in2');
 dlnetGenerator = dlnetwork(lgraphGenerator);
 
 %% Discriminator Network
-% Input: 231 x 1 x 1 array
+% Input: 1 x 231 x 1 array
 scale = 0.2; % for Leaky ReLU if x < 0, then f(x) = scale * x, otherwise f(x) = x
 inputSize = [231 1 1];
 
 % This derives from the more general 
 % activations = ((input_size + 2*padding - filter_size)/stride) + 1
-
 layersDiscriminator = [
     imageInputLayer(inputSize,'Normalization','none','Name','in')
     concatenationLayer(3,2,'Name','cat')
-    convolution2dLayer([32 1],8*numFilters,'Stride',2,'Padding',[1 0],'Name','conv1')
+    convolution2dLayer([33 1],8*numFilters,'Stride',2,'Padding',[1 0],'Name','conv1')
     leakyReluLayer(scale,'Name','lrelu1')
     convolution2dLayer([16 1],4*numFilters,'Stride',2,'Padding',[1 0],'Name','conv2')
     leakyReluLayer(scale,'Name','lrelu2')
-    convolution2dLayer([8 1],2*numFilters,'Stride',2,'Padding',[1 0],'Name','conv3')
+    convolution2dLayer([7 1],2*numFilters,'Stride',2,'Padding',[1 0],'Name','conv3')
     leakyReluLayer(scale,'Name','lrelu3')
-    convolution2dLayer([4 1],numFilters,'Stride',2,'Padding',[1 0],'Name','conv4')
+    convolution2dLayer([3 1],numFilters,'Stride',2,'Padding',[1 0],'Name','conv4')
     leakyReluLayer(scale,'Name','lrelu4')
-    convolution2dLayer([8 1],1,'Name','conv5')];
+    convolution2dLayer([10 1],1,'Name','conv5')];
 
 lgraphDiscriminator = layerGraph(layersDiscriminator);
 
