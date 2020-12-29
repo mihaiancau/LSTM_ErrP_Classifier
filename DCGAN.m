@@ -1,6 +1,23 @@
 %% Transform signals and labels
 % Select signals and labels from one subject and trial
-% load EpochedData_Training\fc5_va_D1800.mat;
+load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data_ErrP\MatLab_EpochedData\VizualActiv_DoarEpoci\fc5_va_D1800.mat';
+% Convert categorical labels to 1 x 1800 vector, where 0 = std. and 1 = stim.
+Labels = Labels.';
+labels = zeros(1,1800); 
+for i = 1 : length(Labels)
+    if (Labels(i) == 'N') 
+        labels(i) = 0;
+    else
+        labels(i) = 1;
+    end
+end
+% Convert cellular signals to array of double
+signals = cell2mat(Signals).'; % 231 x 1800 array
+% Standardize the signals to have zero mean and unit variance
+meanSignals = mean(signals,2); % mean(A,dim) returns the mean along dimension dim
+signalsNormalized = signals-meanSignals;
+stdSignals = std(signalsNormalized(:)); % std(A) returns the standard deviation of the elements of A along the first array dimension whose size does not equal 1
+signalsNormalized = signalsNormalized/stdSignals;
 
 %% Generator Network
 % Output: 231 x 1 x 1 array
@@ -8,7 +25,7 @@ numFilters = 64;
 numLatentInputs = 100;
 % This derives from the more general activations = input_size - (filter_size - 1),
 % provided no padding and striding applied
-projectionSize = [160 1 1]; % = N1 projection size is [N1 1 1]
+projectionSize = [160 1 511]; % = N1 projection size is [N1 1 1]
 filterSize = 5; % = f1 filter size is [1 f1]
 numClasses = 2;
 embeddingDimension = 100; % matches numLatentInputs
@@ -73,3 +90,23 @@ lgraphDiscriminator = addLayers(lgraphDiscriminator,layers);
 lgraphDiscriminator = connectLayers(lgraphDiscriminator,'emb','cat/in2');
 
 dlnetDiscriminator = dlnetwork(lgraphDiscriminator);
+
+%% Network training
+% Training parameters
+params.numLatentInputs = numLatentInputs;
+params.numClasses = numClasses;
+params.sizeData = [inputSize length(labels)];
+params.numEpochs = 1000;
+params.miniBatchSize = 256;
+
+% Specify the options for Adam optimizer
+params.learnRate = 0.0002;
+params.gradientDecayFactor = 0.5;
+params.squaredGradientDecayFactor = 0.999;
+
+executionEnvironment = "cpu";
+params.executionEnvironment = executionEnvironment;
+
+% Train the CGAN
+[dlnetGenerator,dlnetDiscriminator] = trainGAN(dlnetGenerator, ...
+        dlnetDiscriminator,signalsNormalized,labels,params); 

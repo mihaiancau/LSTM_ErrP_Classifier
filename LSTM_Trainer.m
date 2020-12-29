@@ -1,9 +1,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LSTM network for classification of error-related potentials %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data_ErrP\MatLab_EpochedData\fc5_vaD cu procente\fc5_vaD75p.mat' % here path to EpochedData_Training sample
+load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data_ErrP\MatLab_EpochedData\fc5_vaMi cu procente\fc5_vaM75p.mat' % here path to EpochedData_Training sample
 
-summary(Labels);
+% summary(Labels);
 % A = Epoch with error-related potential
 % N = Standard epoch
 
