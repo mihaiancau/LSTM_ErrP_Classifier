@@ -6,9 +6,9 @@ Labels = Labels.';
 labels = zeros(1,1800); 
 for i = 1 : length(Labels)
     if (Labels(i) == 'N') 
-        labels(i) = 0;
+        labels(i) = 1; % standard
     else
-        labels(i) = 1;
+        labels(i) = 2; % stimulated
     end
 end
 % Convert cellular signals to array of double
@@ -96,7 +96,7 @@ dlnetDiscriminator = dlnetwork(lgraphDiscriminator);
 params.numLatentInputs = numLatentInputs;
 params.numClasses = numClasses;
 params.sizeData = [inputSize length(labels)];
-params.numEpochs = 1000;
+params.numEpochs = 100;
 params.miniBatchSize = 256;
 
 % Specify the options for Adam optimizer
