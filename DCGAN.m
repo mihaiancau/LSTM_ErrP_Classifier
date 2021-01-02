@@ -1,6 +1,6 @@
 %% Transform signals and labels
 % Select signals and labels from one subject and trial
-load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\EpochedData\VizualActiv_DoarEpoci\fc5_va_Mih120.mat';
+load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\temporar 2ian2021\fc5_vaDAntrenament.mat';
 % Convert categorical labels to array
 labels = zeros(1,length(transpose(Labels))); % dim2 needs to be length(Labels)
 for i = 1 : length(transpose(Labels))
@@ -95,11 +95,11 @@ dlnetDiscriminator = dlnetwork(lgraphDiscriminator);
 params.numLatentInputs = numLatentInputs;
 params.numClasses = numClasses;
 params.sizeData = [inputSize length(labels)];
-params.numEpochs = 50; % ratio epoch:iteration = 1:5 for miniBatchSize 32
-params.miniBatchSize = 32; % 256
+params.numEpochs = 25; % 100
+params.miniBatchSize = 16; % 32
 
 % Specify the options for Adam optimizer
-params.learnRate = 0.0002;
+params.learnRate = 0.0001; % 0.0002
 params.gradientDecayFactor = 0.5;
 params.squaredGradientDecayFactor = 0.999;
 
@@ -113,7 +113,7 @@ params.executionEnvironment = executionEnvironment;
 %% Setting up the synthesis of standard and stimulated epochs
 rng default
 
-numTests = 900; % the number of 1-by-1-by-100 arrays of random values to input into the generator network
+numTests = 1000; % the number of 1-by-1-by-100 arrays of random values to input into the generator network
 ZNew = randn(1,1,numLatentInputs,numTests,'single');
 dlZNew = dlarray(ZNew,'SSCB');
 
@@ -122,14 +122,14 @@ dlZNew = dlarray(ZNew,'SSCB');
 numStd = length(labels(labels == 1));
 numStim = length(labels(labels == 2));
 TNew = ones(1,1,1,numTests,'single');
-TNew(1,1,1,1:(numStim*numTests/length(labels))) = single(2);
+TNew(1,1,1,1:floor(numStim*numTests/length(labels))) = single(2);
 dlTNew = dlarray(TNew,'SSCB');
 
 %% Synthesis of standard and stimulated epochs
 dlXGeneratedNew = predict(dlnetGenerator,dlZNew,dlTNew)*stdSignals+meanSignals;
 
 idxGenerated = 1:numTests;
-idxStim = idxGenerated(1:(numStim*numTests/length(labels))); % first 1/4 are fake stim epochs
+idxStim = idxGenerated(1:floor(numStim*numTests/length(labels))); % first 1/4 are fake stim epochs
 idxStd = idxGenerated((length(idxStim) + 1):end); % last 3/4 are fake std epochs
 
 % Extract signals
@@ -159,9 +159,38 @@ for i = 1:n
 end
 LabelsNew = categorical(LabelsNew);
 
+%% Plot samples of the artificial epochs
+% t = 1:231;
+% figure;
+% subplot(2,3,1);
+% x = XGeneratedNew(1,:,i);
+% plot(t,x,'r');
+% subplot(2,3,2);
+% x = XGeneratedNew(1,:,i);
+% plot(t,x,'r');
+% subplot(2,3,3);
+% x = XGeneratedNew(1,:,i);
+% plot(t,x,'r');
+% subplot(2,3,4);
+% subplot(2,3,5);
+% subplot(2,3,6);
+
 %% Amplify original data
-SignalsOrigAmp = [Signals; Signals; Signals; Signals; Signals; Signals; Signals];
-LabelsOrigAmp = [Labels; Labels; Labels; Labels; Labels; Labels; Labels];
+% % for 180-epoch sized original datasets amplify 8x from 132 to 1056
+SignalsOrigAmp = [Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals]; 
+LabelsOrigAmp = [Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels];
+% for 180-epoch sized original datasets amplify 14x from 132 to 1848
+% SignalsOrigAmp = [Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals];
+% LabelsOrigAmp = [Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels];
+% for 120-epoch sized original datasets amplify 11x from 90 to 990 
+% SignalsOrigAmp = [Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals]; 
+% LabelsOrigAmp = [Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels];
+% for 360-epoch sized original datasets amplify 4x from 270 to 1080 
+% SignalsOrigAmp = [Signals; Signals; Signals; Signals]; 
+% LabelsOrigAmp = [Labels; Labels; Labels; Labels];
+% for 60-epoch sized original datasets amplify 22x from 45 to 990 
+% SignalsOrigAmp = [Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals; Signals]; 
+% LabelsOrigAmp = [Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels; Labels];
 
 %% Concatenate original and fake data
 SignalsAugm = [SignalsOrigAmp; SignalsNew];
@@ -171,4 +200,4 @@ Signals = SignalsAugm;
 Labels = LabelsAugm;
 
 % Save data
-save 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\EpochedData\DCGAN_augmentedDatasets\fc6_va_Mih120_AMPx840_DCGANx900_TOT1800.mat' Labels Signals;
+save 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\temporar 2ian2021\fc5_va_D_AMPx1056_DCGANx1000_TOTx2056.mat' Labels Signals;
