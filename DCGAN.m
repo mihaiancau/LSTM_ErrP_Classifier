@@ -1,18 +1,17 @@
 %% Transform signals and labels
 % Select signals and labels from one subject and trial
-load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data_ErrP\MatLab_EpochedData\VizualActiv_DoarEpoci\fc5_va_D1800.mat';
-% Convert categorical labels to 1 x 1800 vector, where 0 = std. and 1 = stim.
-Labels = Labels.';
-labels = zeros(1,1800); 
-for i = 1 : length(Labels)
-    if (Labels(i) == 'N') 
+load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\EpochedData\VizualActiv_DoarEpoci\fc5_va_Mih120.mat';
+% Convert categorical labels to array
+labels = zeros(1,length(transpose(Labels))); % dim2 needs to be length(Labels)
+for i = 1 : length(transpose(Labels))
+    if (transpose(Labels(i)) == 'N') 
         labels(i) = 1; % standard
     else
         labels(i) = 2; % stimulated
     end
 end
 % Convert cellular signals to array of double
-signals = cell2mat(Signals).'; % 231 x 1800 array
+signals = cell2mat(Signals).'; % 231 x length(transpose(Labels)) array
 % Standardize the signals to have zero mean and unit variance
 meanSignals = mean(signals,2); % mean(A,dim) returns the mean along dimension dim
 signalsNormalized = signals-meanSignals;
@@ -96,8 +95,8 @@ dlnetDiscriminator = dlnetwork(lgraphDiscriminator);
 params.numLatentInputs = numLatentInputs;
 params.numClasses = numClasses;
 params.sizeData = [inputSize length(labels)];
-params.numEpochs = 100;
-params.miniBatchSize = 256;
+params.numEpochs = 50; % ratio epoch:iteration = 1:5 for miniBatchSize 32
+params.miniBatchSize = 32; % 256
 
 % Specify the options for Adam optimizer
 params.learnRate = 0.0002;
@@ -110,3 +109,66 @@ params.executionEnvironment = executionEnvironment;
 % Train the CGAN
 [dlnetGenerator,dlnetDiscriminator] = trainGAN(dlnetGenerator, ...
         dlnetDiscriminator,signalsNormalized,labels,params); 
+    
+%% Setting up the synthesis of standard and stimulated epochs
+rng default
+
+numTests = 900; % the number of 1-by-1-by-100 arrays of random values to input into the generator network
+ZNew = randn(1,1,numLatentInputs,numTests,'single');
+dlZNew = dlarray(ZNew,'SSCB');
+
+% Specify that 3/4 of arrays are standard and the rest are
+% stimulated
+numStd = length(labels(labels == 1));
+numStim = length(labels(labels == 2));
+TNew = ones(1,1,1,numTests,'single');
+TNew(1,1,1,1:(numStim*numTests/length(labels))) = single(2);
+dlTNew = dlarray(TNew,'SSCB');
+
+%% Synthesis of standard and stimulated epochs
+dlXGeneratedNew = predict(dlnetGenerator,dlZNew,dlTNew)*stdSignals+meanSignals;
+
+idxGenerated = 1:numTests;
+idxStim = idxGenerated(1:(numStim*numTests/length(labels))); % first 1/4 are fake stim epochs
+idxStd = idxGenerated((length(idxStim) + 1):end); % last 3/4 are fake std epochs
+
+% Extract signals
+XGeneratedNew = squeeze(extractdata(gather(dlXGeneratedNew)));
+% Extract labels
+TGeneratedNew = zeros(1,numTests);
+TGeneratedNew(idxStim) = 1;
+
+%% Conversion of fake data to LSTM readable format
+f = XGeneratedNew;
+ft = TGeneratedNew;
+
+% Convert fake signals to cell data
+SignalsNew = num2cell(f,1);
+SignalsNew = transpose(SignalsNew);
+SignalsNew = cellfun(@transpose, SignalsNew, 'UniformOutput', false);
+SignalsNew = cellfun(@double, SignalsNew, 'UniformOutput',false);
+% Convert fake labels to categorical data
+[m,n] = size(ft);
+LabelsNew = cell(n,1);
+for i = 1:n
+    if ft(1,i) == 0
+        LabelsNew{i,1} = 'N';
+    else
+        LabelsNew{i,1} = 'A';
+    end
+end
+LabelsNew = categorical(LabelsNew);
+
+%% Amplify original data
+SignalsOrigAmp = [Signals; Signals; Signals; Signals; Signals; Signals; Signals];
+LabelsOrigAmp = [Labels; Labels; Labels; Labels; Labels; Labels; Labels];
+
+%% Concatenate original and fake data
+SignalsAugm = [SignalsOrigAmp; SignalsNew];
+LabelsAugm = [LabelsOrigAmp; LabelsNew];
+
+Signals = SignalsAugm;
+Labels = LabelsAugm;
+
+% Save data
+save 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\EpochedData\DCGAN_augmentedDatasets\fc6_va_Mih120_AMPx840_DCGANx900_TOT1800.mat' Labels Signals;
