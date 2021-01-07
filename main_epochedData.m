@@ -2,9 +2,20 @@
 %%%%%%%% Wrapper for classifying epochs using LSTM network from epoched data %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\temporar 2ian2021\fc5_va_D_testare.mat';
+load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\temporar 2ian2021\fc5_va_D_testare.mat'
+% Convert from cell to array type if needed
+% f = transpose(cell2mat(Signals));
+% f_tip = zeros(1, size(Labels,1));
+% for i = 1 : size(Labels, 1)
+%     if Labels(i) == 'N'
+%         f_tip(i) = 0;
+%     else
+%         f_tip(i) = 1;
+%     end
+% end
+
 epoch = zeros(231,1);
-res = char(zeros(size(f,2),1));    
+res = char(zeros(size(f,2),1)); 
 for i = 1 : size(f,2)
     epoch = f(:,i);
     % aici facem testul

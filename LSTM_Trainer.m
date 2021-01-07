@@ -1,11 +1,23 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LSTM network for classification of error-related potentials %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\temporar 2ian2021\fc5_vaD_IMF_Antr.mat' % here path to EpochedData_Training sample
+load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\temporar 2ian2021\fc5_va_D180_AMPx1800_DCGANx1800_TOTx3600.mat'
 
 summary(Labels);
 % A = Epoch with error-related potential
 % N = Standard epoch
+
+% % Amplify datasets if needed
+% f = 32;
+% SignalsAmp = Signals;
+% LabelsAmp = Labels;
+% for i = 1:f
+%     SignalsAmp = [SignalsAmp; Signals];
+%     LabelsAmp = [LabelsAmp; Labels];
+% end
+% Signals = SignalsAmp;
+% Labels = LabelsAmp;
+% summary(Labels);
 
 % Train the Classifier Using Raw Signal Data
 
@@ -59,7 +71,7 @@ layers = [ ...
     classificationLayer
     ];
 options = trainingOptions('adam', ...
-    'MaxEpochs',8, ...  % 5
+    'MaxEpochs',5, ...  % 5
     'MiniBatchSize', 32, ... 
     'InitialLearnRate', 0.01, ... 
     'ValidationData',{XVal,YVal}, ...
