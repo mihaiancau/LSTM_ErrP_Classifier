@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\temporar 2ian2021\fc5_va_D_testare.mat'
-% Convert from cell to array type if needed
+% % Convert from cell to array type if needed
 % f = transpose(cell2mat(Signals));
 % f_tip = zeros(1, size(Labels,1));
 % for i = 1 : size(Labels, 1)

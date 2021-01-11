@@ -1,6 +1,6 @@
 %% Transform signals and labels
 % Select signals and labels from one subject and trial
-load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\EpochedData\VizualActiv_DoarEpoci\fc5_va_D180.mat';
+load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\temporar 2ian2021\fc5_va_D_antrenament.mat';
 % Convert categorical labels to array
 labels = zeros(1,length(transpose(Labels))); % dim2 needs to be length(Labels)
 for i = 1 : length(transpose(Labels))
@@ -95,7 +95,7 @@ dlnetDiscriminator = dlnetwork(lgraphDiscriminator);
 params.numLatentInputs = numLatentInputs;
 params.numClasses = numClasses;
 params.sizeData = [inputSize length(labels)];
-params.numEpochs = 25; % 100
+params.numEpochs = 5; % 100
 params.miniBatchSize = 16; % 32
 
 % Specify the options for Adam optimizer
@@ -113,7 +113,7 @@ params.executionEnvironment = executionEnvironment;
 %% Setting up the synthesis of standard and stimulated epochs
 rng default
 
-numTests = 1800; % the number of 1-by-1-by-100 arrays of random values to input into the generator network
+numTests = 1620; % the number of 1-by-1-by-100 arrays of random values to input into the generator network
 ZNew = randn(1,1,numLatentInputs,numTests,'single');
 dlZNew = dlarray(ZNew,'SSCB');
 
@@ -160,9 +160,23 @@ end
 LabelsNew = categorical(LabelsNew);
 
 %% Plot samples of the artificial epochs
-% t = 1:231;
-% splitInd = floor(numStim*numTests/length(labels));
-% figure;
+t = 1:231;
+n = 10;
+splitInd = floor(numStim*numTests/length(labels));
+figure;
+for k = 1 : n
+    subplot (2,2*n,k);
+    x = XGeneratedNew(:,k);
+    plot(t,x,'r');
+    title(sprintf('Subplot %d: Fake Stim',k));
+end
+for k = 1 : n
+    subplot (2,2*n,n+k);
+    x = XGeneratedNew(:,k);
+    plot(t,x,'r');
+    title(sprintf('Subplot %d: Fake Std',n+k));
+end
+
 % subplot(2,3,1);
 % x = XGeneratedNew(:,1);
 % plot(t,x,'r');
@@ -174,7 +188,7 @@ LabelsNew = categorical(LabelsNew);
 % subplot(2,3,3);
 % x = XGeneratedNew(:,3);
 % plot(t,x,'r');
-% % title('Subplot 3: Fake Stim')
+% title('Subplot 3: Fake Stim')
 % subplot(2,3,4);
 % x = XGeneratedNew(:,splitInd + 1);
 % plot(t,x,'r');
@@ -188,51 +202,99 @@ LabelsNew = categorical(LabelsNew);
 % plot(t,x,'r');
 % title('Subplot 6: Fake Std')
 
-%% Plot samples of the original epochs
-% SignalsMat = cell2mat(Signals);
-% LabelsMat = cell2mat(Labels);
-
-% stimInd = 0;
-% stdInd = 0;
-% XStimInd = zeros(1,3);
-% XStdInd = zeros(1,3);
-
-% genInd = 1;
-% while stimInd < 4 && genInd < length(LabelsMat)
-%     if LabelsMat(genInd) == 1
-%         stimInd = stimInd + 1;
-%         XStimInd(stimInd) = genInd;
-%     end
-%     genInd = genInd + 1;
-% end
-
-% genInd = 1;
-% while stdInd < 4 && genInd < length(LabelsMat)
-%     if LabelsMat(genInd) == 0
-%         stdInd = stdInd + 1;
-%         XStdInd(stdInd) = genInd;
-%     end
-%     genInd = genInd + 1;
-% end
-
-
-
-
-%% Amplify original data
-f = 9; % f = (Desired Amplification Factor) - 1
-SignalsOrigAmp = Signals;
-LabelsOrigAmp = Labels;
-for i = 1:f
-    SignalsOrigAmp = [SignalsOrigAmp; Signals];
-    LabelsOrigAmp = [LabelsOrigAmp; Labels];
+% Plot samples of the original epochs
+SignalsMat = cell2mat(Signals);
+LabelsMat = zeros(1,size(Labels,1));
+for i = 1 : size(Labels, 1)
+    if Labels(i) == 'N'
+        LabelsMat(i) = 0;
+    else
+        LabelsMat(i) = 1;
+    end
 end
 
+stimInd = 0;
+stdInd = 0;
+XStimInd = zeros(1,3);
+XStdInd = zeros(1,3);
+
+genInd = 1;
+while stimInd < 4 && genInd < length(LabelsMat)
+    if LabelsMat(genInd) == 1
+        stimInd = stimInd + 1;
+        XStimInd(stimInd) = genInd;
+    end
+    genInd = genInd + 1;
+end
+
+genInd = 1;
+while stdInd < 4 && genInd < length(LabelsMat)
+    if LabelsMat(genInd) == 0
+        stdInd = stdInd + 1;
+        XStdInd(stdInd) = genInd;
+    end
+    genInd = genInd + 1;
+end
+
+figure;
+for k = 1 : n
+    subplot (2,2*n,k);
+    x = SignalsMat(XStimInd(k),:);
+    plot(t,x,'r');
+    title(sprintf('Subplot %d: Orig Stim',k));
+end
+
+for k = 1 : n
+    subplot (2,2*n,n+k);
+    x = SignalsMat(XStdInd(k),:);
+    plot(t,x,'r');
+    title(sprintf('Subplot %d: Orig Std',n+k));
+end
+
+% subplot(2,3,1);
+% x = SignalsMat(XStimInd(1),:);
+% plot(t,x,'b');
+% title('Subplot 1: Orig Stim');
+% subplot(2,3,2);
+% x = SignalsMat(XStimInd(2),:);
+% plot(t,x,'b');
+% title('Subplot 2: Orig Stim');
+% subplot(2,3,3);
+% x = SignalsMat(XStimInd(3),:);
+% plot(t,x,'b');
+% title('Subplot 3: Orig Stim')
+% subplot(2,3,4);
+% x = SignalsMat(XStdInd(1),:);
+% plot(t,x,'b');
+% title('Subplot 4: Orig Std');
+% subplot(2,3,5);
+% x = SignalsMat(XStdInd(2),:);
+% plot(t,x,'b');
+% title('Subplot 5: Orig Std');
+% subplot(2,3,6);
+% x = SignalsMat(XStdInd(3),:);
+% plot(t,x,'b');
+% title('Subplot 6: Orig Std')
+
+
+% %% Amplify original data
+% f = 9; % f = (Desired Amplification Factor) - 1
+% SignalsOrigAmp = Signals;
+% LabelsOrigAmp = Labels;
+% for i = 1:f
+%     SignalsOrigAmp = [SignalsOrigAmp; Signals];
+%     LabelsOrigAmp = [LabelsOrigAmp; Labels];
+% end
+
 %% Concatenate original and fake data
-SignalsAugm = [SignalsOrigAmp; SignalsNew];
-LabelsAugm = [LabelsOrigAmp; LabelsNew];
+SignalsAugm = [Signals; SignalsNew];
+LabelsAugm = [Labels; LabelsNew];
+
+% SignalsAugm = [SignalsOrigAmp; SignalsNew];
+% LabelsAugm = [LabelsOrigAmp; LabelsNew];
 
 Signals = SignalsAugm;
 Labels = LabelsAugm;
 
 % Save data
-save 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\temporar 2ian2021\fc5_va_D180_AMPx1800_DCGANx1800_TOTx3600.mat' Labels Signals;
+save 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\temporar 2ian2021\fc5_va_D_antrenament_DCGANx1620.mat' Labels Signals;
