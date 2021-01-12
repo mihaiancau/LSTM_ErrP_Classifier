@@ -95,7 +95,7 @@ dlnetDiscriminator = dlnetwork(lgraphDiscriminator);
 params.numLatentInputs = numLatentInputs;
 params.numClasses = numClasses;
 params.sizeData = [inputSize length(labels)];
-params.numEpochs = 5; % 100
+params.numEpochs = 50; % 100
 params.miniBatchSize = 16; % 32
 
 % Specify the options for Adam optimizer
@@ -111,9 +111,9 @@ params.executionEnvironment = executionEnvironment;
         dlnetDiscriminator,signalsNormalized,labels,params); 
     
 %% Setting up the synthesis of standard and stimulated epochs
-rng default
+% rng default
 
-numTests = 1620; % the number of 1-by-1-by-100 arrays of random values to input into the generator network
+numTests = size(Labels,1); % the number of 1-by-1-by-100 arrays of random values to input into the generator network
 ZNew = randn(1,1,numLatentInputs,numTests,'single');
 dlZNew = dlarray(ZNew,'SSCB');
 
@@ -164,43 +164,43 @@ t = 1:231;
 n = 10;
 splitInd = floor(numStim*numTests/length(labels));
 figure;
-for k = 1 : n
-    subplot (2,2*n,k);
-    x = XGeneratedNew(:,k);
-    plot(t,x,'r');
-    title(sprintf('Subplot %d: Fake Stim',k));
-end
-for k = 1 : n
-    subplot (2,2*n,n+k);
-    x = XGeneratedNew(:,k);
-    plot(t,x,'r');
-    title(sprintf('Subplot %d: Fake Std',n+k));
-end
+% for k = 1 : n
+%     subplot (2,2*n,k);
+%     x = XGeneratedNew(:,k);
+%     plot(t,x,'r');
+%     title(sprintf('Subplot %d: Fake Stim',k));
+% end
+% for k = 1 : n
+%     subplot (2,2*n,n+k);
+%     x = XGeneratedNew(:,k);
+%     plot(t,x,'r');
+%     title(sprintf('Subplot %d: Fake Std',n+k));
+% end
 
-% subplot(2,3,1);
-% x = XGeneratedNew(:,1);
-% plot(t,x,'r');
-% title('Subplot 1: Fake Stim');
-% subplot(2,3,2);
-% x = XGeneratedNew(:,2);
-% plot(t,x,'r');
-% title('Subplot 2: Fake Stim');
-% subplot(2,3,3);
-% x = XGeneratedNew(:,3);
-% plot(t,x,'r');
-% title('Subplot 3: Fake Stim')
-% subplot(2,3,4);
-% x = XGeneratedNew(:,splitInd + 1);
-% plot(t,x,'r');
-% title('Subplot 4: Fake Std');
-% subplot(2,3,5);
-% x = XGeneratedNew(:,splitInd + 2);
-% plot(t,x,'r');
-% title('Subplot 5: Fake Std');
-% subplot(2,3,6);
-% x = XGeneratedNew(:,splitInd + 3);
-% plot(t,x,'r');
-% title('Subplot 6: Fake Std')
+subplot(2,3,1);
+x = XGeneratedNew(:,1);
+plot(t,x,'r');
+title('Subplot 1: Fake Stim');
+subplot(2,3,2);
+x = XGeneratedNew(:,2);
+plot(t,x,'r');
+title('Subplot 2: Fake Stim');
+subplot(2,3,3);
+x = XGeneratedNew(:,3);
+plot(t,x,'r');
+title('Subplot 3: Fake Stim')
+subplot(2,3,4);
+x = XGeneratedNew(:,splitInd + 1);
+plot(t,x,'r');
+title('Subplot 4: Fake Std');
+subplot(2,3,5);
+x = XGeneratedNew(:,splitInd + 2);
+plot(t,x,'r');
+title('Subplot 5: Fake Std');
+subplot(2,3,6);
+x = XGeneratedNew(:,splitInd + 3);
+plot(t,x,'r');
+title('Subplot 6: Fake Std')
 
 % Plot samples of the original epochs
 SignalsMat = cell2mat(Signals);
@@ -237,44 +237,44 @@ while stdInd < 4 && genInd < length(LabelsMat)
 end
 
 figure;
-for k = 1 : n
-    subplot (2,2*n,k);
-    x = SignalsMat(XStimInd(k),:);
-    plot(t,x,'r');
-    title(sprintf('Subplot %d: Orig Stim',k));
-end
+% for k = 1 : n
+%     subplot (2,2*n,k);
+%     x = SignalsMat(XStimInd(k),:);
+%     plot(t,x,'r');
+%     title(sprintf('Subplot %d: Orig Stim',k));
+% end
+% 
+% for k = 1 : n
+%     subplot (2,2*n,n+k);
+%     x = SignalsMat(XStdInd(k),:);
+%     plot(t,x,'r');
+%     title(sprintf('Subplot %d: Orig Std',n+k));
+% end
 
-for k = 1 : n
-    subplot (2,2*n,n+k);
-    x = SignalsMat(XStdInd(k),:);
-    plot(t,x,'r');
-    title(sprintf('Subplot %d: Orig Std',n+k));
-end
-
-% subplot(2,3,1);
-% x = SignalsMat(XStimInd(1),:);
-% plot(t,x,'b');
-% title('Subplot 1: Orig Stim');
-% subplot(2,3,2);
-% x = SignalsMat(XStimInd(2),:);
-% plot(t,x,'b');
-% title('Subplot 2: Orig Stim');
-% subplot(2,3,3);
-% x = SignalsMat(XStimInd(3),:);
-% plot(t,x,'b');
-% title('Subplot 3: Orig Stim')
-% subplot(2,3,4);
-% x = SignalsMat(XStdInd(1),:);
-% plot(t,x,'b');
-% title('Subplot 4: Orig Std');
-% subplot(2,3,5);
-% x = SignalsMat(XStdInd(2),:);
-% plot(t,x,'b');
-% title('Subplot 5: Orig Std');
-% subplot(2,3,6);
-% x = SignalsMat(XStdInd(3),:);
-% plot(t,x,'b');
-% title('Subplot 6: Orig Std')
+subplot(2,3,1);
+x = SignalsMat(XStimInd(1),:);
+plot(t,x,'b');
+title('Subplot 1: Orig Stim');
+subplot(2,3,2);
+x = SignalsMat(XStimInd(2),:);
+plot(t,x,'b');
+title('Subplot 2: Orig Stim');
+subplot(2,3,3);
+x = SignalsMat(XStimInd(3),:);
+plot(t,x,'b');
+title('Subplot 3: Orig Stim')
+subplot(2,3,4);
+x = SignalsMat(XStdInd(1),:);
+plot(t,x,'b');
+title('Subplot 4: Orig Std');
+subplot(2,3,5);
+x = SignalsMat(XStdInd(2),:);
+plot(t,x,'b');
+title('Subplot 5: Orig Std');
+subplot(2,3,6);
+x = SignalsMat(XStdInd(3),:);
+plot(t,x,'b');
+title('Subplot 6: Orig Std')
 
 
 % %% Amplify original data
@@ -297,4 +297,4 @@ Signals = SignalsAugm;
 Labels = LabelsAugm;
 
 % Save data
-save 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\temporar 2ian2021\fc5_va_D_antrenament_DCGANx1620.mat' Labels Signals;
+save 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\temporar 2ian2021\fc5_va_D_antrenament_Orig_50p_DCGAN_50p.mat' Labels Signals;
