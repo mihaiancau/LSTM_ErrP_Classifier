@@ -1,7 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LSTM network for classification of error-related potentials %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\temporar 2ian2021\fc5_va_D_antrenament_Orig_50p_DCGAN_50p.mat'
+load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\VizualActiv 50_50\D\fc5_va_D_antrenament_Orig_33p_IMF_33p_DCGAN_33p.mat'
+
 summary(Labels);
 % A = Epoch with error-related potential
 % N = Standard epoch
