@@ -1,6 +1,6 @@
 %% Transform signals and labels
 % Select signals and labels from one subject and trial
-load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\VizualActiv 50_50\D\fc5_vaDAntr_originCell.mat';
+load 'C:\Users\Mihay\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\Subiecti - date echilibrate\S9\fc5_vaS9Antr_echi.mat';
 % Convert categorical labels to array
 labels = zeros(1,length(transpose(Labels))); % dim2 needs to be length(Labels)
 for i = 1 : length(transpose(Labels))
@@ -95,7 +95,7 @@ dlnetDiscriminator = dlnetwork(lgraphDiscriminator);
 params.numLatentInputs = numLatentInputs;
 params.numClasses = numClasses;
 params.sizeData = [inputSize length(labels)];
-params.numEpochs = 50; % 100
+params.numEpochs = 50; % 50
 params.miniBatchSize = 16; % 32
 
 % Specify the options for Adam optimizer
@@ -286,28 +286,25 @@ title('Subplot 6: Orig Std')
 %     LabelsOrigAmp = [LabelsOrigAmp; Labels];
 % end
 
-% %% Concatenate original and DCGAN fake data
-% SignalsAugm = [Signals; SignalsNew];
-% LabelsAugm = [Labels; LabelsNew];
-% 
-% % SignalsAugm = [SignalsOrigAmp; SignalsNew];
-% % LabelsAugm = [LabelsOrigAmp; LabelsNew];
-% 
-% Signals = SignalsAugm;
-% Labels = LabelsAugm;
+%% Concatenate original and DCGAN fake data
+SignalsAugm = [Signals; SignalsNew];
+LabelsAugm = [Labels; LabelsNew];
 
-%% Concatenate IMF-augmented data and DGCAN fake data
-% save the original data used for DCGAN before being overwritten by IMFs
-SignalsIMFAugm = Signals;
-LabelsIMFAugm = Labels;
-
-load  'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\VizualActiv 50_50\D\fc5_vaDAntr_242Cell.mat'
-% now Signals and Labels contain 50% orig data and 50% IMF faked data
-SignalsAugm = [SignalsIMFAugm; SignalsNew];
-LabelsAugm = [LabelsIMFAugm; LabelsNew];
+% SignalsAugm = [SignalsOrigAmp; SignalsNew];
+% LabelsAugm = [LabelsOrigAmp; LabelsNew];
 
 Signals = SignalsAugm;
 Labels = LabelsAugm;
 
+% %% Concatenate IMF-augmented data and DGCAN fake data
+% % save the original data used for DCGAN before being overwritten by IMFs
+% load 'C:\Users\Mihay\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\date echilibrate plus imf 24febr2021\S11\fc6S11_echi_imf.mat';
+% % now Signals and Labels contain 50% orig data and 50% IMF faked data
+% SignalsAugm = [Signals; SignalsNew];
+% LabelsAugm = [Labels; LabelsNew];
+% 
+% Signals = SignalsAugm;
+% Labels = LabelsAugm;
+
 % Save data
-save 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\VizualActiv 50_50\D\fc5_va_D_antrenament_Orig_33p_IMF_33p_DCGAN_33p.mat' Labels Signals;
+save 'C:\Users\Mihay\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\Subiecti - date echilibrate\S9\fc5_va_S9_Orig50p_DCGAN50p.mat' Labels Signals;

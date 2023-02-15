@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LSTM network for classification of error-related potentials %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-load 'C:\Users\mihai\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\ExperimentePreliminare\VizualActiv 50_50\D\fc5_va_D_antrenament_Orig_33p_IMF_33p_DCGAN_33p.mat'
+load  'C:\Users\Mihay\OneDrive - Technical University of Cluj-Napoca\Teza doctorat mama\Data\Subiecti - date echilibrate\Dorina\fc6_D_Antr_Orig50p_DCGAN50p_1.mat'
 
 summary(Labels);
 % A = Epoch with error-related potential
@@ -71,9 +71,9 @@ layers = [ ...
     classificationLayer
     ];
 options = trainingOptions('adam', ...
-    'MaxEpochs',50, ...  % 5
-    'MiniBatchSize', 32, ... % 32 
-    'InitialLearnRate', 0.005, ... % 0.01  
+    'MaxEpochs',50, ...  % 50
+    'MiniBatchSize', 128, ... % 32 
+    'InitialLearnRate', 0.05, ... % 0.005  
     'ValidationData',{XVal,YVal}, ...
     'ValidationFrequency',5, ... 
     'SequenceLength', 'longest', ...
@@ -86,11 +86,11 @@ options = trainingOptions('adam', ...
 net = trainNetwork(XTrain,YTrain,layers,options);
 
 % Visualize the Training and Testing Accuracy
-trainPred = classify(net,XTrain,'SequenceLength','longest');
-LSTMAccuracyTrain = sum(trainPred == YTrain)/numel(YTrain)*100;
-figure
-confusionchart(YTrain,trainPred,'ColumnSummary','column-normalized',...
-              'RowSummary','row-normalized','Title','Training Prediction Confusion Chart for LSTM');
+% trainPred = classify(net,XTrain,'SequenceLength','longest');
+% LSTMAccuracyTrain = sum(trainPred == YTrain)/numel(YTrain)*100;
+% figure
+% confusionchart(YTrain,trainPred,'ColumnSummary','column-normalized',...
+%               'RowSummary','row-normalized','Title','Training Prediction Confusion Chart for LSTM');
 % Now classify the testing data with the same network.
 % testPred = classify(net,XTest,'SequenceLength',1000);
 % Calculate the testing accuracy and visualize the classification performance as a confusion matrix
